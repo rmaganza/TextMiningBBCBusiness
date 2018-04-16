@@ -28,6 +28,18 @@ writeLines(as.character(docs[[40]]))
 
 #faccio stopping e stemming e strippo gli spazi vuoti
 docs <- tm_map(docs, removeWords, c(stopwords("english"), 'will'))
+docsCopy <- docs
+stemCompletion2 <- function(x, dictionary) {
+  x <- unlist(strsplit(as.character(x), " "))
+  # Unexpectedly, stemCompletion completes an empty string to
+  # a word in dictionary. Remove empty string to avoid above issue.
+  x <- x[x != ""]
+  x <- stemCompletion(x, dictionary=dictionary)
+  x <- paste(x, sep="", collapse=" ")
+  PlainTextDocument(stripWhitespace(x))
+}
+docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
+
 docs <- tm_map(docs, stemDocument)
 docs <- tm_map(docs, stripWhitespace)
 
