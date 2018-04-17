@@ -92,6 +92,9 @@ wordcloud(names(freq_idf), freq_idf, max.words = 100, min.freq = 1, colors=pal, 
 
 idf_dataframe<-data.frame(names(freq_idf), freq_idf)
 wordcloud2(idf_dataframe, size =.2, minSize = 0.5, shape='star', shuffle=F, color = 'skyblue', backgroundColor = 'black')
+
+#QUESTA PARTE E' EVITABILE, LA TENGO SOLO PER APPREZZARE GLI SFORZI CHO HO FATTO
+##########################################################
 #Procedo ora con la clusterizzazione dei testi attravero il metodo delle k-means:
  # Preliminarmente individuo quel k che minimizza la DEVin media o quello che massimizza la silhouette:
 #DEVin
@@ -122,6 +125,7 @@ dtmr$clustering = km$cluster
 ###########################################################
 #calcoliamo la distanza 'coseno' e applichiamo l'algoritmo dei k-medoidi con k in base alla silhouette media
 distanze <- dist(as.matrix(idf), method='cosine')
+#'pamk' --> fornisce anche il k ottimale in funzione di quello che massimizza la silhouette media
 cluster <-pamk(distanze, krange = 2:13, diss=T)
 
 idf$clustering <- cluster$pamobject$clustering
@@ -150,7 +154,7 @@ gr4 = as.matrix(dtmr[which(dtmr$clustering==4),])
 gr5 = as.matrix(dtmr[which(dtmr$clustering==5),])
 gr6 = as.matrix(dtmr[which(dtmr$clustering==6),])
 gr7 = as.matrix(dtmr[which(dtmr$clustering==7),])
-
+###########################
 freq1=colSums(gr1)
 wordcloud(names(freq1),freq1, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
 
@@ -167,7 +171,7 @@ freq5=colSums(gr5)
 wordcloud(names(freq5),freq5, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
 
 freq6=colSums(gr6)
-wordcloud(names(freq6),freq6, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq6),freq6, min.freq=0.75,colors=brewer.pal(6,"Dark2"))
 
 freq7=colSums(gr7)
 wordcloud(names(freq7),freq7, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
@@ -182,7 +186,7 @@ freq10=colSums(gr10)
 wordcloud(names(freq10),freq10, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
 
 freq11=colSums(gr11)
-wordcloud(names(freq11),freq11, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq11),freq11, min.freq=0.6,colors=brewer.pal(6,"Dark2"))
 
 freq12=colSums(gr12)
 wordcloud(names(freq12),freq12, min.freq=0.3,colors=brewer.pal(6,"Dark2"))
@@ -192,6 +196,7 @@ for (cluster in 1:12) {
   clustersize[cluster] <- sum(idf$clustering == cluster)
 }
 clustersize
+#######################################################
 #faccio le wordscluods dei 7 gruppi
 
 set.seed(42)
@@ -215,3 +220,15 @@ wordcloud(names(freq6),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
 
 freq7=colSums(gr7)
 wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+
+#OSSERVAZIONE
+#potremmo fare un back test attraverso la lettura di documenti che fungono da MEDOIDI:
+cluster$pamobject$medoids #"1","273","164","160","438","434","186","498","196","265","392","209"
+#dovremmo formalizzare la seguente idea: preso il doc. 1 confrontiamo la wordcloud
+#con gli arg principali del testo verficando se, efffettivamente, essendo medoide (e quindi
+#riducendo la dissimilarità media con tutte le oss. del proprio gruppo) racchiude tutte, o quasi, le
+#parole della sua wordcloud. Se non mi so spiegato bene chiamami. 
+#P.S. potrebbe essere un'idea idiota.
+
+#DOBBIAMO FARE LE ASSOCIAZIONI MA DIREI CHE LE POSSIAMO FARE GIOVEDI ASSIEME
