@@ -6,29 +6,33 @@ library(cluster)
 library(fpc)
 library(proxy)
 library(wordcloud2)
+library(here) # used to load corpus in different environments without having to set working directory
 
 
-#Innanzitutto creo un corpus di documenti:
-docs <- Corpus(DirSource('C:\\Users\\Livia Mattei\\Desktop\\Data Mining\\Lavoro_Esame\\business\\business'))
-summary(docs)
+# Innanzitutto creo un corpus di documenti:
+docs <- Corpus(DirSource(paste0(here(),'/business/business')))
 
 
-#Tolgo prima di tuttoi trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
-toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ", x))}) 
+# Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
+toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ", x))})
 docs <- tm_map(docs, toSpace, '-')
 
 
-#puisco i testi con i comandi predefiniti
-writeLines(as.character(docs[[40]]))
+# pulisco i testi con i comandi predefiniti
+#writeLines(as.character(docs[[40]]))
 docs <- tm_map(docs, removePunctuation)
 docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, content_transformer(tolower))
-writeLines(as.character(docs[[40]]))
+
+# writeLines(as.character(docs[[40]]))
 
 
-#faccio stopping e stemming e strippo gli spazi vuoti
+# faccio stopping e stemming e strippo gli spazi vuoti
 docs <- tm_map(docs, removeWords, c(stopwords("english"), 'will'))
 docsCopy <- docs
+docs <- tm_map(docs, stemDocument)
+docs <- tm_map(docs, stripWhitespace)
+
 stemCompletion2 <- function(x, dictionary) {
   x <- unlist(strsplit(as.character(x), " "))
   # Unexpectedly, stemCompletion completes an empty string to
@@ -38,10 +42,15 @@ stemCompletion2 <- function(x, dictionary) {
   x <- paste(x, sep="", collapse=" ")
   PlainTextDocument(stripWhitespace(x))
 }
-docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
 
-docs <- tm_map(docs, stemDocument)
-docs <- tm_map(docs, stripWhitespace)
+# the company name "Yukos" gets stemmed to "Yuko"
+docs <- tm_map(docs, content_transformer(gsub),
+               pattern = "yuko", replacement = "yukos")
+
+
+
+docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
+docs <- Corpus(VectorSource(docs))
 
 
 #Modifico le parole (es. said) che le metto al presente!
@@ -49,7 +58,7 @@ docs <- tm_map(docs, content_transformer(gsub),
                pattern = "said", replacement = "say")
 
 #Creo la Document-Term matrix attuo una prima valutazione delle frequenze di appirizione delle parole:
-writeLines(as.character(docs[[40]]))
+# writeLines(as.character(docs[[40]]))
 dtm <- DocumentTermMatrix(docs)
 inspect(dtm)
 freq <- colSums(as.matrix(dtm))
@@ -58,8 +67,8 @@ freq[head(ord)]
 freq[tail(ord)]
 
 
-#Creo una nuova dtm dove faccio una selezione della frequenza e delle lunghezza dei termini che vi entrano:
-docs <-  tm_map(docs, removeWords, c('also','â£m'))
+# Creo una nuova dtm dove faccio una selezione della frequenza e delle lunghezza dei termini che vi entrano:
+docs <-  tm_map(docs, removeWords, 'also')
 dtmr <-DocumentTermMatrix(docs, control=list(wordLengths=c(4, 20), bounds = list(global = c(3,510))))
 inspect(dtmr)
 freqr=colSums(as.matrix(dtmr))
@@ -67,7 +76,7 @@ ordr=order(freqr, decreasing = T)
 freqr[head(ordr)]
 freqr[tail(ordr)]
 
-#faccio le freq tfxidf
+# faccio le freq tfxidf
 idf <- weightTfIdf(dtmr)
 freq_idf <- colSums(as.matrix(idf))
 ord_idf <- order(freq_idf, decreasing = T)
@@ -75,10 +84,12 @@ freq_idf[head(ord_idf)]
 freq_idf[tail(ord_idf)]
 
 #faccio la wordcloud
-set.seed(42) 
 pal <- brewer.pal(9, "BuGn")
-pal <- pal[-(1:4)]
-wordcloud(names(freq_idf),freq_idf,min.freq=1,colors=pal, random.order=F)
+pal <- pal[-(1:2)]
+# png("graphs/wordcloud1.png", width=1280,height=800) # saves the wordcloud
+wordcloud(names(freq_idf), freq_idf, max.words = 100, min.freq = 1, colors=pal, scale=c(8, .3), random.order=F, vfont=c('sans serif', 'plain'))
+# dev.off()
+
 idf_dataframe<-data.frame(names(freq_idf), freq_idf)
 wordcloud2(idf_dataframe, size =.2, minSize = 0.5, shape='star', shuffle=F, color = 'skyblue', backgroundColor = 'black')
 #Procedo ora con la clusterizzazione dei testi attravero il metodo delle k-means:
@@ -86,7 +97,7 @@ wordcloud2(idf_dataframe, size =.2, minSize = 0.5, shape='star', shuffle=F, colo
 #DEVin
 dev_in=c()
 for (k in 1:15){
-  km = kmeans(as.matrix(dtmr), k)   
+  km = kmeans(as.matrix(dtmr), k)
   dev_in[k]=km$tot.withinss
 }
 
@@ -104,7 +115,7 @@ for (i in 2:13){
 }
 
 plot(1:12, v_sil, type='b')
-#Scelgo k=7 poichè è il migior trade-off tra una DEVin bassa ed un'alta silhouette media!
+#Scelgo k=7 poich? ? il migior trade-off tra una DEVin bassa ed un'alta silhouette media!
 km = kmeans(dtmr, 7)
 dtmr$clustering = km$cluster
 
