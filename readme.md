@@ -18,7 +18,7 @@ We also make use of the following packages:
 - wordcloud
 - here
 
-You may need to install them if you don't already have them. Unfortunately, the R language does not come with a reliable dependency manager.
+You may need to install them if you don't have them already. Unfortunately, the R language does not come with a reliable dependency manager.
 
 ## Corpus
 
