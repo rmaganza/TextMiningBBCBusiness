@@ -11,6 +11,13 @@ library(syuzhet)# for sentiment analysis
 library(ggplot2)
 set.seed(101) # for reproducibility
 
+get_top_words_from_dtm <- function (dtm, n) {
+  freqr=colSums(as.matrix(dtm))
+  ordr=order(freqr, decreasing = T)
+  freqr[head(ordr, n)]
+}
+
+
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
 
@@ -155,8 +162,21 @@ gr10 = as.matrix(idf[which(idf$clustering==10),])
 gr11 = as.matrix(idf[which(idf$clustering==11),])
 gr12 = as.matrix(idf[which(idf$clustering==12),])
 
+## TOP 50 TERMS FOR EACH GROUP
 
-###########################
+get_top_words_from_dtm(gr1, 25)
+get_top_words_from_dtm(gr2, 25)
+get_top_words_from_dtm(gr3, 25)
+get_top_words_from_dtm(gr4, 25)
+get_top_words_from_dtm(gr5, 25)
+get_top_words_from_dtm(gr6, 25)
+get_top_words_from_dtm(gr7, 25)
+get_top_words_from_dtm(gr8, 25)
+get_top_words_from_dtm(gr9, 25)
+get_top_words_from_dtm(gr10, 25)
+get_top_words_from_dtm(gr11, 25)
+get_top_words_from_dtm(gr12, 25)
+sqthi###########################
 
 ## SENTIMENT ANALYSIS NEL GRUPPO 1 e 3: ESEMPIO
 #Gruppo 1
