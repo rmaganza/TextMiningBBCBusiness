@@ -49,9 +49,13 @@ stemCompletion2 <- function(x, dictionary) {
 docs <- tm_map(docs, content_transformer(gsub),
                pattern = "yuko", replacement = "yukos")
 
-#Modifico le parole (es. said) che le metto al presente!
+# Modifico le parole (es. said) che le metto al presente!
 docs <- tm_map(docs, content_transformer(gsub),
                pattern = "said", replacement = "say")
+
+# Substitute "Lanka" with "Sri Lanka"
+docs <- tm_map(docs, content_transformer(gsub),
+               pattern = "lanka", replacement = "srilanka")
 
 
 # DESTEMMING
@@ -60,7 +64,7 @@ docs <- Corpus(VectorSource(docs))
 
 #############################
 # runnare ogni volta che si riesegue il destemming per qualsiasi motivo e PUSHARE il file docs aggiornato !!!
-# save(docs, paste0(here(),'/docs.RData'))
+# save(docs, file=paste0(here(),'/docs.RData'))
 #############################
 
 
