@@ -9,6 +9,7 @@ library(wordcloud2)
 library(here) # used to load corpus in different environments without having to set working directory
 library(syuzhet)# for sentiment analysis
 library(ggplot2)
+set.seed(101) # for reproducibility
 
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
@@ -29,7 +30,7 @@ docs <- tm_map(docs, content_transformer(tolower))
 
 
 # faccio stopping e stemming e strippo gli spazi vuoti
-docs <- tm_map(docs, removeWords, c(stopwords("english"), 'will'))
+docs <- tm_map(docs, removeWords, stopwords("SMART"))
 docsCopy <- docs
 docs <- tm_map(docs, stemDocument)
 docs <- tm_map(docs, stripWhitespace)
@@ -48,15 +49,22 @@ stemCompletion2 <- function(x, dictionary) {
 docs <- tm_map(docs, content_transformer(gsub),
                pattern = "yuko", replacement = "yukos")
 
-
-
-docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
-docs <- Corpus(VectorSource(docs))
-
-
 #Modifico le parole (es. said) che le metto al presente!
 docs <- tm_map(docs, content_transformer(gsub),
                pattern = "said", replacement = "say")
+
+
+# DESTEMMING
+docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
+docs <- Corpus(VectorSource(docs))
+
+#############################
+# runnare ogni volta che si riesegue il destemming per qualsiasi motivo e PUSHARE il file docs aggiornato !!!
+# save(docs, paste0(here(),'/docs.RData'))
+#############################
+
+
+
 
 #Creo la Document-Term matrix attuo una prima valutazione delle frequenze di appirizione delle parole:
 # writeLines(as.character(docs[[40]]))
@@ -69,7 +77,6 @@ freq[tail(ord)]
 
 
 # Creo una nuova dtm dove faccio una selezione della frequenza e delle lunghezza dei termini che vi entrano:
-docs <-  tm_map(docs, removeWords, 'also')
 dtmr <-DocumentTermMatrix(docs, control=list(wordLengths=c(4, 20), bounds = list(global = c(3,510))))
 inspect(dtmr)
 freqr=colSums(as.matrix(dtmr))
