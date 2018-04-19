@@ -9,6 +9,11 @@ library(wordcloud2)
 library(here) # used to load corpus in different environments without having to set working directory
 library(syuzhet)# for sentiment analysis
 library(ggplot2)
+library(topicmodels)
+source(paste0(here(),'/compute_ngd.R'))
+library(tidytext)
+library(dplyr)
+
 set.seed(101) # for reproducibility
 
 get_top_words_from_dtm <- function (dtm, n) {
@@ -37,7 +42,7 @@ docs <- tm_map(docs, content_transformer(tolower))
 
 
 # faccio stopping e stemming e strippo gli spazi vuoti
-docs <- tm_map(docs, removeWords, stopwords("SMART"))
+docs <- tm_map(docs, removeWords, c(stopwords("SMART"), 'year', 'hour', 'month'))
 docsCopy <- docs
 docs <- tm_map(docs, stemDocument)
 docs <- tm_map(docs, stripWhitespace)
@@ -64,6 +69,8 @@ docs <- tm_map(docs, content_transformer(gsub),
 docs <- tm_map(docs, content_transformer(gsub),
                pattern = "lanka", replacement = "srilanka")
 
+docs <- tm_map(docs, content_transformer(gsub),
+               pattern = "russian", replacement = "russia")
 
 # DESTEMMING
 docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
@@ -176,7 +183,18 @@ get_top_words_from_dtm(gr9, 25)
 get_top_words_from_dtm(gr10, 25)
 get_top_words_from_dtm(gr11, 25)
 get_top_words_from_dtm(gr12, 25)
-sqthi###########################
+
+topicslist_manual <- list(c('profit', 'sale', 'game', 'share', 'earn'), c('dollar', 'crude', 'deficit', 'bush', 'barrel'), c('yukos', 'russia', 'gazprom', 'court', 'auction'), c('fiat', 'italy', 'saab', 'opel', 'motor'), c('economy', 'growth', 'house', 'unemployed', 'inflation'), c('china', 'yuan', 'japan', 'israel', 'islam'), c('lanka', 'disaster', 'people', 'indonesia', 'tsunami'), c('airline', 'india', 'qantas', 'airbus', 'lufthansa'), c('börse', 'deutsche', 'euronext', 'takeover', 'shareholder'), c('retail', 'sale', 'store', 'christmas', 'lvmh'), c('ebbers', 'fraud', 'verizon', 'qwest', 'lawyer'), c('insurance', 'marsh', 'pension', 'investigation', 'plead'))
+
+topics_manual_ngd <- numeric(12)
+index <- 1
+for (topics in topicslist_manual) {
+  topic_manual_ngd[index] <- compute_NGD_for_combinations(topics)
+  index <- index+1
+}
+topics_manual_ngd
+# save(topic_manual_ngd, file=paste0(here(),'/topic_smanual_ngd.RData'))
+###########################
 
 ## SENTIMENT ANALYSIS NEL GRUPPO 1 e 3: ESEMPIO
 #Gruppo 1
@@ -281,3 +299,43 @@ cluster$pamobject$medoids #"1","273","164","160","438","434","186","498","196","
 #P.S. potrebbe essere un'idea idiota.
 
 #DOBBIAMO FARE LE ASSOCIAZIONI MA DIREI CHE LE POSSIAMO FARE GIOVEDI ASSIEME
+
+
+
+
+## LATENT DIRICHLET ALLOCATION
+lda_model <- LDA(dtmr, k=12, control = list(seed = 1234))
+ap_topics <- tidy(lda_model, matrix = "beta")
+ap_topics <- ap_topics[-which(ap_topics$term=='list'),]
+ap_topics <- ap_topics[-which(ap_topics$term=='character'),]
+
+ap_top_terms <- ap_topics %>%
+  group_by(topic) %>%
+  top_n(5, beta) %>%
+  ungroup() %>%
+  arrange(topic, -beta)
+
+ap_top_terms %>% print(n=Inf)
+
+automatic_lda_topics <- list()
+
+automatic_lda_topics [1] <- ap_top_terms[1:5,'term']
+automatic_lda_topics [2] <- ap_top_terms[6:10,'term']
+automatic_lda_topics [3] <- ap_top_terms[11:15,'term']
+automatic_lda_topics [4] <- ap_top_terms[16:20,'term']
+automatic_lda_topics [5] <- ap_top_terms[21:25,'term']
+automatic_lda_topics [6] <- ap_top_terms[26:30,'term']
+automatic_lda_topics [7] <- ap_top_terms[31:35,'term']
+automatic_lda_topics [8] <- ap_top_terms[36:40,'term']
+automatic_lda_topics [9] <- ap_top_terms[41:45,'term']
+automatic_lda_topics [10] <- ap_top_terms[46:50,'term']
+automatic_lda_topics [11] <- ap_top_terms[51:55,'term']
+automatic_lda_topics [12] <- ap_top_terms[56:60,'term']
+
+topics_automatic_ngd <- numeric(12)
+index <- 1
+for (topics in automatic_lda_topics) {
+  topics_automatic_ngd[index] <- compute_NGD_for_combinations(topics)
+  index <- index+1
+}
+topics_automatic_ngd
