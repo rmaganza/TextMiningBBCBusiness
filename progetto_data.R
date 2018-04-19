@@ -7,7 +7,8 @@ library(fpc)
 library(proxy)
 library(wordcloud2)
 library(here) # used to load corpus in different environments without having to set working directory
-
+library(syuzhet)# for sentiment analysis
+library(ggplot2)
 
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
@@ -86,7 +87,7 @@ freq_idf[tail(ord_idf)]
 #faccio la wordcloud
 pal <- brewer.pal(9, "BuGn")
 pal <- pal[-(1:2)]
-# png("graphs/wordcloud1.png", width=1280,height=800) # saves the wordcloud
+# png(paste0(here(), "/graphs/wordcloud1.png"), width=1280,height=800) # saves the wordcloud
 wordcloud(names(freq_idf), freq_idf, max.words = 100, min.freq = 1, colors=pal, scale=c(8, .3), random.order=F, vfont=c('sans serif', 'plain'))
 # dev.off()
 
@@ -144,28 +145,45 @@ gr11 = as.matrix(idf[which(idf$clustering==11),])
 gr12 = as.matrix(idf[which(idf$clustering==12),])
 
 
-##########################################################
-#divido in gruppi
-
-gr1 = as.matrix(dtmr[which(dtmr$clustering==1),])
-gr2 = as.matrix(dtmr[which(dtmr$clustering==2),])
-gr3 = as.matrix(dtmr[which(dtmr$clustering==3),])
-gr4 = as.matrix(dtmr[which(dtmr$clustering==4),])
-gr5 = as.matrix(dtmr[which(dtmr$clustering==5),])
-gr6 = as.matrix(dtmr[which(dtmr$clustering==6),])
-gr7 = as.matrix(dtmr[which(dtmr$clustering==7),])
 ###########################
+
+## SENTIMENT ANALYSIS NEL GRUPPO 1 e 3: ESEMPIO
+#Gruppo 1
+df_text_gr1 <- data.frame(text = sapply(docs[which(idf$clustering==1)], paste, collapse=" "), stringsAsFactors = FALSE)
+d <- get_nrc_sentiment(df_text_gr1$text)
+td<-data.frame(t(d))
+
+td_new <- data.frame(rowSums(td))
+
+names(td_new)[1] <- "count"
+td_new <- cbind("sentiment" = rownames(td_new), td_new)
+rownames(td_new) <- NULL
+qplot(sentiment, data=td_new, weight=count, geom="bar",fill=sentiment)+ggtitle("Sentiments")
+
+# Gruppo 3
+df_text_gr3 <- data.frame(text = sapply(docs[which(idf$clustering==3)], paste, collapse=" "), stringsAsFactors = FALSE)
+d <- get_nrc_sentiment(df_text_gr3$text)
+td<-data.frame(t(d))
+
+td_new <- data.frame(rowSums(td))
+
+names(td_new)[1] <- "count"
+td_new <- cbind("sentiment" = rownames(td_new), td_new)
+rownames(td_new) <- NULL
+qplot(sentiment, data=td_new, weight=count, geom="bar",fill=sentiment)+ggtitle("Sentiments")
+######################
+
 freq1=colSums(gr1)
-wordcloud(names(freq1),freq1, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq1),freq1, min.freq=0.3,colors=brewer.pal(6,"Dark2"))
 
 freq2=colSums(gr2)
-wordcloud(names(freq2),freq2, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq2),freq2, min.freq=0.3,colors=brewer.pal(6,"Dark2"))
 
 freq3=colSums(gr3)
-wordcloud(names(freq3),freq3, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq3),freq3, min.freq=0.3,colors=brewer.pal(6,"Dark2"))
 
 freq4=colSums(gr4)
-wordcloud(names(freq4),freq4, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq4),freq4, min.freq=0.3,colors=brewer.pal(6,"Dark2"))
 
 freq5=colSums(gr5)
 wordcloud(names(freq5),freq5, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
@@ -180,10 +198,10 @@ freq8=colSums(gr8)
 wordcloud(names(freq8),freq8, min.freq=0.6,colors=brewer.pal(6,"Dark2"))
 
 freq9=colSums(gr9)
-wordcloud(names(freq9),freq9, min.freq=0.1,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq9),freq9, min.freq=0.4,colors=brewer.pal(6,"Dark2"))
 
 freq10=colSums(gr10)
-wordcloud(names(freq10),freq10, min.freq=0.8,colors=brewer.pal(6,"Dark2"))
+wordcloud(names(freq10),freq10, min.freq=0.5,colors=brewer.pal(6,"Dark2"))
 
 freq11=colSums(gr11)
 wordcloud(names(freq11),freq11, min.freq=0.6,colors=brewer.pal(6,"Dark2"))
@@ -228,7 +246,7 @@ cluster$pamobject$medoids #"1","273","164","160","438","434","186","498","196","
 #dovremmo formalizzare la seguente idea: preso il doc. 1 confrontiamo la wordcloud
 #con gli arg principali del testo verficando se, efffettivamente, essendo medoide (e quindi
 #riducendo la dissimilarità media con tutte le oss. del proprio gruppo) racchiude tutte, o quasi, le
-#parole della sua wordcloud. Se non mi so spiegato bene chiamami. 
+#parole della sua wordcloud. Se non mi so spiegato bene chiamami.
 #P.S. potrebbe essere un'idea idiota.
 
 #DOBBIAMO FARE LE ASSOCIAZIONI MA DIREI CHE LE POSSIAMO FARE GIOVEDI ASSIEME
