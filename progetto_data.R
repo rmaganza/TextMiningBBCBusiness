@@ -13,7 +13,7 @@ library(topicmodels)
 source(paste0(here(),'/compute_ngd.R'))
 library(tidytext)
 library(dplyr)
-
+library(reticulate)
 set.seed(101) # for reproducibility
 
 get_top_words_from_dtm <- function (dtm, n) {
@@ -37,7 +37,7 @@ toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ",
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
 docs_raw <- docs
-# save(docs_raw, file=paste0(here(),'/docs_raw'))
+# save(docs_raw, file=paste0(here(),'/docs_raw.RData'))
 
 # Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
 docs %>% tm_map(toSpace, '-') %>%
@@ -97,8 +97,10 @@ pal <- pal[-(1:2)]
 wordcloud(names(freq_idf), freq_idf, max.words = 100, min.freq = 1, colors=pal, scale=c(8, .3), random.order=F, vfont=c('sans serif', 'plain'))
 # dev.off()
 
-idf_dataframe<-data.frame(names(freq_idf), freq_idf)
-wordcloud2(idf_dataframe, size =.2, minSize = 0.5, shape='star', shuffle=F, color = 'skyblue', backgroundColor = 'black')
+idf_dataframe<-data.frame(word=names(freq_idf), freq=freq_idf)
+rownames(idf_dataframe) <- NULL
+
+wordcloud2(idf_dataframe, size =.5, minSize = 0.5, shuffle=F, color = 'random-dark')
 
 #QUESTA PARTE E' EVITABILE, LA TENGO SOLO PER APPREZZARE GLI SFORZI CHO HO FATTO
 ##########################################################
@@ -319,4 +321,3 @@ for (topics in automatic_lda_topics) {
 topics_automatic_ngd
 
 # save(topics_automatic_ngd, automatic_lda_topics, file=paste0(here(),'/topics_automatic_ngd.RData'))
-
