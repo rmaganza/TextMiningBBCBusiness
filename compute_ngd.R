@@ -14,11 +14,11 @@ getGoogleCount <- function(searchTerms=NULL, language="en", ...){
   posExtractStart <- gregexpr(indicatorWord, siteHTML,
                               fixed = TRUE)[[1]]
   stringExtract <- as.character(substring(siteHTML, first=posExtractStart[2]-30,
-                                          last = posExtractStart[2] +50 ))
+                                          last = posExtractStart[2]+50 ))
   count <- strsplit(stringExtract, 'resultStats')[[1]][2]
   count <- strsplit(count, split='results')[[1]][1]
   count <- strsplit(count, split='>')[[1]][2]
-  if(length(strsplit(count, split=" ")[[1]])==2){
+  if(length(strsplit(count, split=" ")[[1]]) == 2){
     count <- strsplit(count, split=" ")[[1]][2]
   }
   count <- as.numeric(gsub(",", "", count))
@@ -43,12 +43,12 @@ compute_NGD_for_combinations <- function (topiclist, show=F) {
   NGD_vector <- numeric()
   count <- 1
   for (combination in combn(topiclist, 2, simplify = FALSE)) {
-    if (!is.na(combination)){
+    if (length(combination)==2){
     ngd <- NGD(combination[1], combination[2])
-    if (show) print(ngd)
+    }
+    if (show) cat("NGD for words ", combination[1], " and ", combination[2], ":", ngd)
     NGD_vector[count] <- ngd
     count <- count+1
     }
-  }
   mean(NGD_vector, na.rm=T)
 }

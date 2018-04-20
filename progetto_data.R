@@ -22,31 +22,6 @@ get_top_words_from_dtm <- function (dtm, n) {
   freqr[head(ordr, n)]
 }
 
-
-# Innanzitutto creo un corpus di documenti:
-docs <- Corpus(DirSource(paste0(here(),'/business/business')))
-
-
-# Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
-toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ", x))})
-docs <- tm_map(docs, toSpace, '-')
-
-
-# pulisco i testi con i comandi predefiniti
-#writeLines(as.character(docs[[40]]))
-docs <- tm_map(docs, removePunctuation)
-docs <- tm_map(docs, removeNumbers)
-docs <- tm_map(docs, content_transformer(tolower))
-
-# writeLines(as.character(docs[[40]]))
-
-
-# faccio stopping e stemming e strippo gli spazi vuoti
-docs <- tm_map(docs, removeWords, c(stopwords("SMART"), 'year', 'hour', 'month'))
-docsCopy <- docs
-docs <- tm_map(docs, stemDocument)
-docs <- tm_map(docs, stripWhitespace)
-
 stemCompletion2 <- function(x, dictionary) {
   x <- unlist(strsplit(as.character(x), " "))
   # Unexpectedly, stemCompletion completes an empty string to
@@ -57,23 +32,28 @@ stemCompletion2 <- function(x, dictionary) {
   PlainTextDocument(stripWhitespace(x))
 }
 
-# the company name "Yukos" gets stemmed to "Yuko"
-docs <- tm_map(docs, content_transformer(gsub),
-               pattern = "yuko", replacement = "yukos")
+toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ", x))})
 
-# Modifico le parole (es. said) che le metto al presente!
-docs <- tm_map(docs, content_transformer(gsub),
-               pattern = "said", replacement = "say")
+# Innanzitutto creo un corpus di documenti:
+docs <- Corpus(DirSource(paste0(here(),'/business/business')))
+docs_raw <- docs
 
-# Substitute "Lanka" with "Sri Lanka"
-docs <- tm_map(docs, content_transformer(gsub),
-               pattern = "lanka", replacement = "srilanka")
+# Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
+docs %>% tm_map(toSpace, '-') %>%
+         tm_map(removePunctuation) %>%
+         tm_map(removeNumbers) %>%
+         tm_map(removeWords, c(stopwords("SMART"), 'year', 'hour', 'month'))
 
-docs <- tm_map(docs, content_transformer(gsub),
-               pattern = "russian", replacement = "russia")
+docsCopy <- docs
 
-# DESTEMMING
-docs <- lapply(docs, stemCompletion2, dictionary=docsCopy)
+docs %>% tm_map(stemDocument) %>% tm_map(stripWhitespace) %>%
+        # the company name "Yukos" gets stemmed to "Yuko"
+         tm_map(content_transformer(gsub), pattern = "yuko", replacement = "yukos") %>%
+         tm_map(content_transformer(gsub), pattern = "said", replacement = "say") %>%
+         tm_map(content_transformer(gsub), pattern = "lanka", replacement = "srilanka") %>% tm_map(content_transformer(gsub), pattern = "russian", replacement = "russia") %>%
+
+  # DESTEMMING
+         lapply(stemCompletion2, dictionary=docsCopy)
 docs <- Corpus(VectorSource(docs))
 
 #############################
@@ -215,7 +195,7 @@ td_new <- data.frame(rowSums(td))
 names(td_new)[1] <- "count"
 td_new <- cbind("sentiment" = rownames(td_new), td_new)
 rownames(td_new) <- NULL
-qplot(sentiment, data=td_new, weight=count, geom="bar",fill=sentiment)+ggtitle("Sentiments")
+qplot(sentiment, data=td_new, weight=count, geom="bar",fill=sentiment) + ggtitle("Sentiments")
 ######################
 
 freq1=colSums(gr1)
@@ -338,5 +318,5 @@ for (topics in automatic_lda_topics) {
 }
 topics_automatic_ngd
 
-#save(topics_automatic_ngd, file=paste0(here(),'/topics_automatic_ngd.RData'))
+# save(topics_automatic_ngd, automatic_lda_topics, file=paste0(here(),'/topics_automatic_ngd.RData'))
 
