@@ -16,6 +16,9 @@ library(dplyr)
 library(reticulate)
 set.seed(101) # for reproducibility
 
+pythonpath = '/Users/XelmagaX/anaconda3/bin/python'
+use_python(pythonpath, required=T)
+
 get_top_words_from_dtm <- function (dtm, n) {
   freqr=colSums(as.matrix(dtm))
   ordr=order(freqr, decreasing = T)
@@ -37,7 +40,7 @@ toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ",
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
 docs_raw <- docs
-# save(docs_raw, file=paste0(here(),'/docs_raw.RData'))
+# save(docs_raw, file=paste0(here(),'/rdata_files/docs_raw.RData'))
 
 # Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
 docs %>% tm_map(toSpace, '-') %>%
@@ -59,7 +62,7 @@ docs <- Corpus(VectorSource(docs))
 
 #############################
 # runnare ogni volta che si riesegue il destemming per qualsiasi motivo e PUSHARE il file docs aggiornato !!!
-# save(docs, file=paste0(here(),'/docs.RData'))
+# save(docs, file=paste0(here(),'/rdata_files/docs.RData'))
 #############################
 
 
@@ -97,10 +100,18 @@ pal <- pal[-(1:2)]
 wordcloud(names(freq_idf), freq_idf, max.words = 100, min.freq = 1, colors=pal, scale=c(8, .3), random.order=F, vfont=c('sans serif', 'plain'))
 # dev.off()
 
-idf_dataframe<-data.frame(word=names(freq_idf), freq=freq_idf)
-rownames(idf_dataframe) <- NULL
 
-wordcloud2(idf_dataframe, size =.5, minSize = 0.5, shuffle=F, color = 'random-dark')
+##### DOLLAR CLOUD GENERATION: Reticulate Interface
+names_freq <- names(freq_idf)
+maskpath <- paste0(here(), 'graphs/dollar_sign.png')
+wordcloud_output_path <- paste0(here(), '/graphs/dollarcloud.png')
+PIL <- import('PIL')
+np <- import('numpy')
+builtins <- import_builtins()
+py$tuple_dict <- builtins$dict(builtins$zip(names_freq, freq_idf))
+py$mask <- np$array(PIL$Image$open(maskpath))
+source_python(paste0(here(), '/python/wordcloud_generator.py'))
+####################################################
 
 #QUESTA PARTE E' EVITABILE, LA TENGO SOLO PER APPREZZARE GLI SFORZI CHO HO FATTO
 ##########################################################
@@ -280,7 +291,7 @@ for (topics in topicslist_manual) {
   index <- index+1
 }
 topics_manual_ngd
-# save(topics_manual_ngd, file=paste0(here(),'/topics_manual_ngd.RData'))
+# save(topics_manual_ngd, file=paste0(here(),'/rdata_files/topics_manual_ngd.RData'))
 
 
 ## LATENT DIRICHLET ALLOCATION
@@ -320,4 +331,4 @@ for (topics in automatic_lda_topics) {
 }
 topics_automatic_ngd
 
-# save(topics_automatic_ngd, automatic_lda_topics, file=paste0(here(),'/topics_automatic_ngd.RData'))
+# save(topics_automatic_ngd, automatic_lda_topics, file=paste0(here(),'/rdata_files/topics_automatic_ngd.RData'))
