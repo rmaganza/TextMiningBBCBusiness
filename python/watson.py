@@ -6,8 +6,8 @@ from watson_developer_cloud.natural_language_understanding_v1 import Features, E
 
 natural_language_understanding = NaturalLanguageUnderstandingV1(
     version='2017-02-27',
-    username="bf7d6363-a7df-4d93-a400-5fb31ecd3a13",
-    password='Y1TBvMwEYuyW')
+    username="**************",
+    password='************')
 
 response = natural_language_understanding.analyze(
     text="""Ad sales boost Time Warner profit

@@ -5,7 +5,6 @@ library(wordcloud)
 library(cluster)
 library(fpc)
 library(proxy)
-library(wordcloud2)
 library(here) # used to load corpus in different environments without having to set working directory
 library(syuzhet)# for sentiment analysis
 library(ggplot2)
@@ -43,20 +42,20 @@ docs_raw <- docs
 # save(docs_raw, file=paste0(here(),'/rdata_files/docs_raw.RData'))
 
 # Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
-docs %>% tm_map(toSpace, '-') %>%
+docs %<>% tm_map(toSpace, '-') %>%
          tm_map(removePunctuation) %>%
          tm_map(removeNumbers) %>%
          tm_map(removeWords, c(stopwords("SMART"), 'year', 'hour', 'month'))
 
 docsCopy <- docs
 
-docs %>% tm_map(stemDocument) %>% tm_map(stripWhitespace) %>%
+docs %<>% tm_map(stemDocument) %>% tm_map(stripWhitespace) %>%
         # the company name "Yukos" gets stemmed to "Yuko"
          tm_map(content_transformer(gsub), pattern = "yuko", replacement = "yukos") %>%
          tm_map(content_transformer(gsub), pattern = "said", replacement = "say") %>%
          tm_map(content_transformer(gsub), pattern = "lanka", replacement = "srilanka") %>% tm_map(content_transformer(gsub), pattern = "russian", replacement = "russia") %>%
 
-  # DESTEMMING
+######## DESTEMMING #######
          lapply(stemCompletion2, dictionary=docsCopy)
 docs <- Corpus(VectorSource(docs))
 
@@ -169,6 +168,7 @@ wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
 #calcoliamo la distanza 'coseno' e applichiamo l'algoritmo dei k-medoidi con k in base alla silhouette media
 distanze <- dist(as.matrix(idf), method='cosine')
 #'pamk' --> fornisce anche il k ottimale in funzione di quello che massimizza la silhouette media
+set.seed(101)
 cluster <-pamk(distanze, krange = 2:13, diss=T)
 
 idf$clustering <- cluster$pamobject$clustering
