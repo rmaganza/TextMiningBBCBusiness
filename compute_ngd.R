@@ -1,15 +1,15 @@
 library(RCurl)
+library(here)
 
 getGoogleCount <- function(searchTerms=NULL, language="en", ...){
   require(RCurl)
   entry    <- paste(searchTerms, collapse="+")
   siteHTML <- getForm("http://www.google.com/search",
                       hl=language, lr="", q=entry,
-                      btnG="Search", .opts=curlOptions(followlocation=T, httpheader=c("User-Agent" = "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0", 'Connection' = 'keep-alive', 'Accept' = '*/*','Accept-Charset' = 'GBK,utf-8;q=0.7,*;q=0.3', 'Cache-Control' = 'max-age=0')))
-  print(siteHTML)
-  Sys.sleep(5)
+                      btnG="Search")
+  Sys.sleep(sample(seq(0.5, 3, by=0.1), 1))
 
-  write.table(siteHTML, file="tmp google.txt")
+  write.table(siteHTML, file=paste0(here(),"/tmp/tmp_google.txt"))
   indicatorWord <- "resultStats"
   posExtractStart <- gregexpr(indicatorWord, siteHTML,
                               fixed = TRUE)[[1]]
@@ -33,19 +33,19 @@ NGD <- function(x,y){
   xy <- as.numeric(gsub(",", "", xy))
   x  <- as.numeric(gsub(",", "", x ))
   y  <- as.numeric(gsub(",", "", y ))
-  M <- 859000000
+  M <- 25270000000
   dist <- (max(log(x), log(y)) - log(xy))/(log(M)-min(log(x), log(y)))
   return(dist)
 }
 
 
-compute_NGD_for_combinations <- function (topiclist) {
+compute_NGD_for_combinations <- function (topiclist, show=F) {
   NGD_vector <- numeric()
   count <- 1
   for (combination in combn(topiclist, 2, simplify = FALSE)) {
     if (!is.na(combination)){
     ngd <- NGD(combination[1], combination[2])
-    print(ngd)
+    if (show) print(ngd)
     NGD_vector[count] <- ngd
     count <- count+1
     }

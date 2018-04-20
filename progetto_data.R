@@ -189,11 +189,11 @@ topicslist_manual <- list(c('profit', 'sale', 'game', 'share', 'earn'), c('dolla
 topics_manual_ngd <- numeric(12)
 index <- 1
 for (topics in topicslist_manual) {
-  topic_manual_ngd[index] <- compute_NGD_for_combinations(topics)
+  topics_manual_ngd[index] <- compute_NGD_for_combinations(topics)
   index <- index+1
 }
 topics_manual_ngd
-# save(topic_manual_ngd, file=paste0(here(),'/topic_smanual_ngd.RData'))
+# save(topics_manual_ngd, file=paste0(here(),'/topics_manual_ngd.RData'))
 ###########################
 
 ## SENTIMENT ANALYSIS NEL GRUPPO 1 e 3: ESEMPIO
@@ -339,3 +339,6 @@ for (topics in automatic_lda_topics) {
   index <- index+1
 }
 topics_automatic_ngd
+
+#save(topics_automatic_ngd, file=paste0(here(),'/topics_automatic_ngd.RData'))
+
