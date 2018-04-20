@@ -37,6 +37,7 @@ toSpace <- content_transformer(function(x, pattern) { return (gsub(pattern, " ",
 # Innanzitutto creo un corpus di documenti:
 docs <- Corpus(DirSource(paste0(here(),'/business/business')))
 docs_raw <- docs
+# save(docs_raw, file=paste0(here(),'/docs_raw'))
 
 # Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
 docs %>% tm_map(toSpace, '-') %>%
@@ -130,7 +131,6 @@ dtmr$clustering = km$cluster
 
 #faccio le wordscluods dei 7 gruppi
 
-set.seed(42)
 freq1=colSums(gr1)
 wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
 
