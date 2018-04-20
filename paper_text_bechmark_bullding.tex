@@ -1,0 +1,64 @@
+
+\documentclass[]{article}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{float}
+\usepackage[language= italian, backend= biber]{biblatex}
+\usepackage{guit}
+
+\addbibresource{bibfile.bib}
+
+%opening
+\title{BBC Buiness Articles text exploration and benchmark bulding for Automatic Topic Modeling evaluation}
+\author{Tommaso Di Vincenzo, 801487 \and Riccardo Maganza, 808053}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Nel paper viene condotta l'analisi su un corpus di 510 articoli di business. Il fine è quello di confrontare le performance di riconoscimento dei topics individuati dal modello \textit{Latent Dirichlet Allocation} (LDA) con quelle derivanti da una suddivisione per argomenti creata manualmente a partire da un clustering ottenuto con l'algoritmo dei k-medodidi. Viene successivamente analizzata la coerenza semantica dei topics individuati attraverso la Normalised Google Distance (NGD), I risultati sono incoraggianti: le performance dell'algoritmo automatico sono molto vicine al benchmark ed in alcuni casi lo superano. Si discutono inoltre le applicazioni metodoogche di questi risultati.
+\end{abstract}
+
+\section{Introduzione}
+Gli articoli utlizzati in questa analisi sono stati redatti dalla BBC tra il 2004 e il 2005. Originariamente il corpus era composto da 2225 documenti inerenti business, entertainment, politics, sport, tech e l'obiettivo finale era quello di raggruppare gli articoli per categorie di news.
+L'operazione di clustering trattata in questo paper, essendo relativa a 510 articoli inerenti solamente all'ambito del business, ha evidenziato delle complicazioni in quanto molti fattori, che nell'analisi generale potevano essere fortemente discriminanti, in questa invece hanno portato alla sovrapposizione di argomenti.  
+L'obiettivo ultimo è quello di comparare le performance di raggrupamento dell'LDA con un benchmark ed individuare una corretta metrica di confronto semantico per valutare la bontà di modeling del metodo automatizzato.
+
+\section{Materiali e metodi}
+Questa sezione \`e essenzialmente divisa in due parti:
+\begin{enumerate}
+\item Materiali
+\item Metodi
+\end{enumerate}
+
+Nella sotto sezione Materiali si vanno a descrivere i dati che sono stati utilizzati per lo sviluppo del progetto. Da dove vengono i dati, quanti sono, eventuali problemi presenti nei dati e tutto quello che pu\`o servire per comprendere a meglio il dataset oggetto di analisi.
+
+Il corpus di articoli è stato preliminarmente trattato eliminando punteggiatura, simboli particolari e parole poco esplicative allo scopo dell'analisi. Sono state rimosse le stopwords (dizionario SMART) ed è stato attuato lo stemming. Successivamente, dato che molte parole senza suffisso sono risultate prive di significato, è stato applicato un destemming che ha riportato le parole ad una forma originale comune.
+Si è proceduto quindi con la costruzione della Document-Term matrix imputando le frequenze attraverso il metodo \textit{tf-idf:}\[ w_{ij}=\frac{f_{ij}}{max({f_{1j,},f_{2j},...,f_{|v|j}})} \log{\frac{N}{df_{i}}}\]
+dove $f_{ij}$ è la frquenza assoluta del termine $i$ nel doumento $j$, $N$ è il numero totale di documenti e $df_{i}$ è il numero di documenti in cui appare il termine $i$.
+
+Successivamente è stato applicato l'algoritmo dei k-medoid impostando il numero di gruppi ($k$) a 12 in quanto per questo $k$ è stata garantita la silhouette media massima. 
+
+
+
+Per l'idefinizione del benchmark sono state selezionate, per ognuno dei 12 gruppi, le 5 parole che per la logica degli autori sono risultate essere le maggiormente identificative. E' stata poi definita la Normalised google distance (NGD) \[NGD(x,y)=\frac{max(\log f(x),\log f(y)-\log f(x,y)}{\log N-min(\log f(x),\log f(y)} \]
+ed è stata calcolata per tutte le possibili combinazioni di coppie di parole per ogni gruppo e, come indice di sintesi, si è presa la media campionaria.
+Dopo di che è stato applicato il modello \textit{Latent Dirichlet Allocation} (LDA) specificando di voler ottenere in output 12 topics e per ogni topic le 5 parole con livello di associazione maggiore. Si è calcolata la NGD per tutte le combinazioni di coppie come sopra e si son messi i risultati a confronto.
+
+Nella sotto sezione Metodi invece si presentano tutti gli approcci utilizzati. Si pu\`o presentare il framework generale di analisi (attraverso, ad esempio, un flow chart), quindi tutti punti che lo compongono o direttamente gli approcci e metodi per risolvere ogni issue del dataset: dal pre-processing alla valutazione degli approcci. Questa sotto sezione pu\`o essere suddivisa in paragrafi, ognuno dei quali relativo a una fase del data mining / text mining.
+
+\section{Risultati}
+Nella sezione Risultati, come dice il nome, vanno presentati tutti i risultati ottenuti durante l'analisi attraverso rappresentazioni grafiche e tabelle.
+In questa sezione si riportano i punti principali di argomentazione dei risultati. Commenti, analisi e considerazione vanno riportate in questa sezione.
+Si raccomanda di seguire un filo logico coerente con l'analisi nel presentare i risultati ottenuti.
+
+
+\section{Discussioni}
+La sezione Discussione chiude il lavoro riportandono un breve riassunto. Principalmente deve risultare chiaro il problema in analisi, gli obiettivi preposti e l'approccio utilizzato per la risoluzione del problema. Vengono inoltre riportate le principali considerazioni ottenute durante l'analisi dei risultati. Queste considerazione possono quindi essere utilizzate per proporre sviluppi futuri del lavoro.
+
+
+\printbibliography
+
+
+\end{document}
