@@ -148,7 +148,31 @@ plot(1:12, v_sil, type='b')
 km = kmeans(dtmr, 7)
 dtmr$clustering = km$cluster
 
-###########################################################
+#faccio le wordscluods dei 7 gruppi
+
+set.seed(42)
+freq1=colSums(gr1)
+wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq2=colSums(gr2)
+wordcloud(names(freq2),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq3=colSums(gr3)
+wordcloud(names(freq3),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq4=colSums(gr4)
+wordcloud(names(freq4),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq5=colSums(gr5)
+wordcloud(names(freq5),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq6=colSums(gr6)
+wordcloud(names(freq6),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+freq7=colSums(gr7)
+wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
+
+###########################
 #calcoliamo la distanza 'coseno' e applichiamo l'algoritmo dei k-medoidi con k in base alla silhouette media
 distanze <- dist(as.matrix(idf), method='cosine')
 #'pamk' --> fornisce anche il k ottimale in funzione di quello che massimizza la silhouette media
@@ -168,34 +192,6 @@ gr9 = as.matrix(idf[which(idf$clustering==9),])
 gr10 = as.matrix(idf[which(idf$clustering==10),])
 gr11 = as.matrix(idf[which(idf$clustering==11),])
 gr12 = as.matrix(idf[which(idf$clustering==12),])
-
-## TOP 50 TERMS FOR EACH GROUP
-
-get_top_words_from_dtm(gr1, 25)
-get_top_words_from_dtm(gr2, 25)
-get_top_words_from_dtm(gr3, 25)
-get_top_words_from_dtm(gr4, 25)
-get_top_words_from_dtm(gr5, 25)
-get_top_words_from_dtm(gr6, 25)
-get_top_words_from_dtm(gr7, 25)
-get_top_words_from_dtm(gr8, 25)
-get_top_words_from_dtm(gr9, 25)
-get_top_words_from_dtm(gr10, 25)
-get_top_words_from_dtm(gr11, 25)
-get_top_words_from_dtm(gr12, 25)
-
-topicslist_manual <- list(c('profit', 'sale', 'game', 'share', 'earn'), c('dollar', 'crude', 'deficit', 'bush', 'barrel'), c('yukos', 'russia', 'gazprom', 'court', 'auction'), c('fiat', 'italy', 'saab', 'opel', 'motor'), c('economy', 'growth', 'house', 'unemployed', 'inflation'), c('china', 'yuan', 'japan', 'israel', 'islam'), c('lanka', 'disaster', 'people', 'indonesia', 'tsunami'), c('airline', 'india', 'qantas', 'airbus', 'lufthansa'), c('börse', 'deutsche', 'euronext', 'takeover', 'shareholder'), c('retail', 'sale', 'store', 'christmas', 'lvmh'), c('ebbers', 'fraud', 'verizon', 'qwest', 'lawyer'), c('insurance', 'marsh', 'pension', 'investigation', 'plead'))
-
-topics_manual_ngd <- numeric(12)
-index <- 1
-for (topics in topicslist_manual) {
-  topics_manual_ngd[index] <- compute_NGD_for_combinations(topics)
-  index <- index+1
-}
-topics_manual_ngd
-# save(topics_manual_ngd, file=paste0(here(),'/topics_manual_ngd.RData'))
-###########################
-
 ## SENTIMENT ANALYSIS NEL GRUPPO 1 e 3: ESEMPIO
 #Gruppo 1
 df_text_gr1 <- data.frame(text = sapply(docs[which(idf$clustering==1)], paste, collapse=" "), stringsAsFactors = FALSE)
@@ -264,29 +260,6 @@ for (cluster in 1:12) {
 }
 clustersize
 #######################################################
-#faccio le wordscluods dei 7 gruppi
-
-set.seed(42)
-freq1=colSums(gr1)
-wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq2=colSums(gr2)
-wordcloud(names(freq2),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq3=colSums(gr3)
-wordcloud(names(freq3),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq4=colSums(gr4)
-wordcloud(names(freq4),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq5=colSums(gr5)
-wordcloud(names(freq5),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq6=colSums(gr6)
-wordcloud(names(freq6),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq7=colSums(gr7)
-wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
 
 
 #OSSERVAZIONE
@@ -300,7 +273,32 @@ cluster$pamobject$medoids #"1","273","164","160","438","434","186","498","196","
 
 #DOBBIAMO FARE LE ASSOCIAZIONI MA DIREI CHE LE POSSIAMO FARE GIOVEDI ASSIEME
 
+###########################################################
+## TOP 50 TERMS FOR EACH GROUP
 
+get_top_words_from_dtm(gr1, 25)
+get_top_words_from_dtm(gr2, 25)
+get_top_words_from_dtm(gr3, 25)
+get_top_words_from_dtm(gr4, 25)
+get_top_words_from_dtm(gr5, 25)
+get_top_words_from_dtm(gr6, 25)
+get_top_words_from_dtm(gr7, 25)
+get_top_words_from_dtm(gr8, 25)
+get_top_words_from_dtm(gr9, 25)
+get_top_words_from_dtm(gr10, 25)
+get_top_words_from_dtm(gr11, 25)
+get_top_words_from_dtm(gr12, 25)
+
+topicslist_manual <- list(c('profit', 'sale', 'game', 'share', 'earn'), c('dollar', 'crude', 'deficit', 'bush', 'barrel'), c('yukos', 'russia', 'gazprom', 'court', 'auction'), c('fiat', 'italy', 'saab', 'opel', 'motor'), c('economy', 'growth', 'house', 'unemployed', 'inflation'), c('china', 'yuan', 'japan', 'israel', 'islam'), c('lanka', 'disaster', 'people', 'indonesia', 'tsunami'), c('airline', 'india', 'qantas', 'airbus', 'lufthansa'), c('börse', 'deutsche', 'euronext', 'takeover', 'shareholder'), c('retail', 'sale', 'store', 'christmas', 'lvmh'), c('ebbers', 'fraud', 'verizon', 'qwest', 'lawyer'), c('insurance', 'marsh', 'pension', 'investigation', 'plead'))
+
+topics_manual_ngd <- numeric(12)
+index <- 1
+for (topics in topicslist_manual) {
+  topics_manual_ngd[index] <- compute_NGD_for_combinations(topics)
+  index <- index+1
+}
+topics_manual_ngd
+# save(topics_manual_ngd, file=paste0(here(),'/topics_manual_ngd.RData'))
 
 
 ## LATENT DIRICHLET ALLOCATION
