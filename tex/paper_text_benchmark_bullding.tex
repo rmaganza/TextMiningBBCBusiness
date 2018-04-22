@@ -99,12 +99,12 @@ I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli
 Il corpus di articoli è stato preliminarmente trattato eliminando punteggiatura, simboli particolari e parole poco esplicative allo scopo dell'analisi. \newline 
 Sono state rimosse le stopwords, utilizzando un dizionario sufficientemente ampio creato per il sistema \textit{SMART}\footnote{\textit{System for the Mechanical Analysis and Retrieval of Text}}, ed è stato attuato lo stemming, rimuovendo le desinenze da tutte le parole e riconducendole a una radice comune. Questa procedura in particolare è stata affinata manualmente, poiché il sistema di riconoscimento utilizzato non è riuscito ad effettuare lo stemming di tutte le parole ed inoltre presentava, come logico, molti problemi nel riconoscere i nomi di aziende e compagnie, che nei testi in esame erano ovviamente molto presenti. \newline
 Successivamente, dato che molte parole senza suffisso sono risultate di difficile comprensione, è stato applicato un destemming che ha riportato le parole ad una forma originale condivisa attraverso un criterio euristico che ha completato le parole troncate con i suffissi più frequenti nel corpus originale. \newline
-Si è proceduto quindi con la costruzione della Document-Term matrix imputando le frequenze attraverso il metodo \textit{tf-idf:}\[ w_{ij}=\frac{f_{ij}}{max\{{f_{1j,},f_{2j},...,f_{|V|j}}\}} \log{\frac{N}{df_{i}}}\]
+Si è proceduto quindi con la costruzione della Document-Term matrix imputando le frequenze attraverso i metodi \textit{tf} \[ k_{ij}=\frac{f_{ij}}{max\{{f_{1j,},f_{2j},...,f_{|V|j}}\}}\]  e \textit{tf-idf:}\[ w_{ij}={k_{ij}} \times\log{\frac{N}{df_{i}}}\]
 dove $V$ rappresenta il vocabolario del corpus, $f_{ij}$ è la frequenza assoluta del termine $i$ nel documento $j$, $N$ è il numero totale di documenti e $df_{i}$ il numero di documenti in cui appare il termine $i$.
 \newline
 È stata inoltre effettuata una analisi esplorativa del dataset, cercando di contestualizzare i risultati nel contesto socio-economico del periodo degli articoli in esame svolgendo, fra le altre cose, una \textit{sentiment analysis} basata sull'\textit{NRC Emotion Lexicon}.\cite{NRC}
 \subsubsection{Clustering e Topic Extraction}
-È stata inizialmente calcolata la distanza fra le righe della Document-Term Matrix, utilizzando la metrica del coseno.
+È stata inizialmente calcolata la distanza fra le righe della Document-Term Matrix con pesi \textit{tf-idf}, utilizzando la metrica del coseno.
 \[D(\mathbf{X}, \mathbf{Y}) = \frac{2}{\pi}\arccos(\frac{\mathbf{X}\cdot\mathbf{Y}}{\|\mathbf{X}\|\|\mathbf{Y}\|})\]
 dove $\mathbf{X}$ e $\mathbf{Y}$ sono, in questo caso, due righe della DTM. \footnote{Implementazione fornita dalla libreria \textit{proxy} di R che permette all'indice di dissimilarità del coseno usuale di soddisfare la disuguaglianza triangolare e quindi di rispettare le proprietà che deve avere un indice di distanza.} \cite{proxy}
 
@@ -117,7 +117,7 @@ Per la definizione del benchmark sono state selezionate, per ognuno dei 12 grupp
 
 
 Sono stati quindi estratti i topic utilizzando il modello \textit{Latent Dirichlet Allocation} (LDA), che utilizza una logica di inferenza bayesiana \cite{survey} e le cui specifiche vanno oltre lo scopo di questo articolo, richiedendo di ottenere 12 topic in output per poter avere risultati confrontabili.
-L'algoritmo genera in output una lista di topics con un indice di associazione di ogni parola con ciascun topic e uno di ogni topic con ciascun documento.
+L'algoritmo richiede in input una DTM con pesi \textit{tf} e il numero di topics desiderati, e genera in output una lista di topics con un indice di associazione di ogni parola con ciascun topic e uno di ogni topic con ciascun documento.
 Sono state considerate le 5 \textit{keywords} più associate a ciascun topic come rappresentative dell'argomento.
 
 
