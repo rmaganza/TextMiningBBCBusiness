@@ -73,6 +73,7 @@ I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli
 \node (Stemming) [process, below of=stopwords] {Stemming};
 \node (destemming) [process, below of=Stemming] {Destemming};
 \node (kmedoids) [process, below of=destemming] {K-Medoids Clustering};
+\node (esplorativa) [process, left of=destemming, xshift=-2.7cm] {Exploratory Analysis};
 \node (LDA) [process, right of=destemming, xshift=2.7cm] {LDA topic modeling};
 \node (clusters) [io, below of=kmedoids] {Clusters};
 \node (manual) [process, below of=clusters] {Manually Extracted Topics};
@@ -81,6 +82,7 @@ I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli
 \draw [arrow] (Corpus) -- (stopwords);
 \draw [arrow] (stopwords) -- (Stemming);
 \draw [arrow] (Stemming) -- (destemming);
+\draw [arrow] (destemming) -- (esplorativa);
 \draw [arrow] (destemming) -- (LDA);
 \draw [arrow] (destemming) -- (kmedoids);
 \draw [arrow] (kmedoids) -- (clusters);
@@ -207,37 +209,37 @@ Passando al topic modeling effettuato con il modello LDA, la lista delle keyword
 		\hline 
 		\textbf{Topics} & \textbf{Keywords} & \textbf{Mean NGD} \\ 
 		\hline 
-		\textbf{Topic 1} & \{share, companies, firm, market, china\} & 0.7428 \\ 
+		\textbf{Topic 1} & \{dollar, deficit, euro, budget, trade\} & 0.5121 \\ 
 		\hline 
-		\textbf{Topic 2} & \{economic, countries, world, govern, people\} & 0.6482 \\ 
+		\textbf{Topic 2} & \{bank, companies, firm, deal, financial\} & 0.2864 \\ 
 		\hline 
-		\textbf{Topic 3} & \{dollar, deficit, budget, economic, trade\} & 0.2358 \\ 
+		\textbf{Topic 3} & \{companies, firm, worldcom, ebbers, telecom\} & 0.773 \\ 
 		\hline 
-		\textbf{Topic 4} & \{yukos, russian, companies, court, evasion\} & 0.8347 \\ 
+		\textbf{Topic 4} & \{yukos, russia, companies, court, firm\} & 0.6365 \\ 
 		\hline 
-		\textbf{Topic 5} & \{companies, firm, execute, worldcom, ebbers\} & 0.8499 \\ 
+		\textbf{Topic 5} & \{airline, cost, report, fuel, india\} & 0.6619 \\ 
 		\hline 
-		\textbf{Topic 6} & \{club, unit, glazer, share, invest\} & 0.8605 \\ 
+		\textbf{Topic 6} & \{offer, deutsche, börse, share, london\} & 0.704 \\ 
 		\hline 
-		\textbf{Topic 7} & \{india, companies, firm, share, product\} & 0.8393 \\ 
+		\textbf{Topic 7} & \{price, house, market, china, mortgage\} & 0.9843 \\ 
 		\hline 
-		\textbf{Topic 8} & \{profit, sale, euro, market, companies\} & 0.6381 \\ 
+		\textbf{Topic 8} & \{economic, growth, rate, rise, figure\} & 0.3944 \\ 
 		\hline 
-		\textbf{Topic 9} & \{airline, sale, retail, store, lvmh\} & 0.9649 \\ 
+		\textbf{Topic 9} & \{club, unit, glazer, invest, argentinah\} & 0.8455 \\ 
 		\hline 
-		\textbf{Topic 10} & \{economic, rate, growth, price, rise\} & 0.7134 \\ 
+		\textbf{Topic 10} & \{economic, countries, govern, world, people\} & 0.6586 \\ 
 		\hline 
-		\textbf{Topic 11} & \{deutsche, firm, börse, exchange, stock\}  & 0.93 \\ 
+		\textbf{Topic 11} & \{profit, sale, share, market, companies\}  & 0.6995 \\ 
 		\hline 
-	    \textbf{Topic 12} & \{bank, countries, economic, south, market\} & 0.4409 \\ 
+	    \textbf{Topic 12} & \{companies, drug, call, firm, customer\} & 0.5654 \\ 
 		\hline 
 	\end{tabular} 	
 	\caption{Topics estratti automaticamente}
 	\end{center}
 \end{table}
-I topics estratti dal modello LDA in alcuni casi risultano sovrapponibili a quelli estratti manualmente o comunque chiari, mentre in altri sono un po' più fumosi. Per quanto riguarda la coerenza semantica, i 12 topics estratti manualmente presentano una NGD media di 0.7 mentre quelli automatici di 0.72. 
+I topics estratti dal modello LDA in alcuni casi risultano sovrapponibili a quelli estratti manualmente o comunque chiari, mentre in altri sono un po' più fumosi. Per quanto riguarda la coerenza semantica, i 12 topics estratti manualmente presentano una NGD media di 0.7 mentre quelli automatici di 0.64. 
 \newline
-La differenza è piccola e, per alcuni topics, l'estrazione automatizzata ha portato a una dissimilarità semantica molto bassa e ciò evidenzia la sua bontà.
+Il modello automatico fornisce una coerenza semantica addirittura maggiore del modello manuale, mostrandoti però meno capace ad individuare topics sempre ben definiti. Ciò porti a chiedersi se la NGD catturi tutta l'informazione possibile circa la coerenza semantica di due parole. Si rimandano le discussioni sulla metrica utilizzata all'ultimo paragrafo.
 \newline
 Per ultimo, è stato utilizzato IBM Watson sul primo testo del corpus:
 {\footnotesize \blockquote{Ad sales boost Time Warner profit
@@ -254,7 +256,7 @@ Per ultimo, è stato utilizzato IBM Watson sul primo testo del corpus:
 }}
 Watson ha identificato come \textit{keywords}: \textit{Time Warner}, \textit{Time Warner profit}, \textit{higher advert sales}, \textit{AOL Eruope}, fra le altre, riuscendo inoltre a riconoscere le compagnie in esame e le persone citate accompagnando il riconoscimento con un link alle informazioni di ciascuna.
 \section{Discussioni}
-Il riconoscimento automatico dei topics si è mostrato valido: per quanto ancora non riesca a sintetizzare in maniera ``umana", la differenza in base alla metrica utilizzata è incoraggiante. Sarebbe interessante sviluppare il lavoro, utilizzando metodi di topic extraction automatica più sofisticati o con un altro approccio, magari numerico come la \textit{Non-negative Matrix Factorization }(NMF), da un lato, e metodi di clustering più adeguati, dall'altro, per la parte di riconoscimento manuale.
+Il riconoscimento automatico dei topics si è mostrato valido: per quanto ancora non riesca a sintetizzare in maniera ``umana", la metrica utilizzata lo pone a un livello superiore alla sintesi manuale. Sarebbe interessante sviluppare il lavoro, utilizzando metodi di topic extraction automatica più sofisticati o con un altro approccio, magari numerico come la \textit{Non-negative Matrix Factorization }(NMF), da un lato, e metodi di clustering più adeguati, dall'altro, per la parte di riconoscimento manuale.
 \newline
 Sarebbe inoltre necessario sviluppare una metrica di coerenza semantica migliore, in quanto l'utilizzo della Normalized Google Distance desta non pochi dubbi. Per farlo, servirebbe però un corpus di riferimento strutturato e molto ampio, e non è stato possibile reperirlo in tempo.
 

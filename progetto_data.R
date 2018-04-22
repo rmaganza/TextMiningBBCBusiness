@@ -268,3 +268,15 @@ for (topics in automatic_lda_topics) {
 topics_automatic_ngd
 
 # save(topics_automatic_ngd, automatic_lda_topics, file=paste0(here(),'/rdata_files/topics_automatic_ngd.RData'))
+
+
+## WE ADD OUR FIRST SELECTED TOPICS BY THE ALGORITHM BECAUSE WE CANNOTE ENSURE REPLICABILITY
+
+topics_automatic_manually_added <- list(c('dollar', 'deficit', 'euro', 'budget', 'trade'), c('bank', 'companies', 'firm', 'deal', 'financial'), c('companies', 'firm', 'worldcom', 'ebbers', 'telecom'), c('russia', 'yukos', 'court', 'companies', 'firm'), c('airline', 'cost', 'report', 'fuel', 'india'), c('offer', 'deutsche', 'börse', 'share', 'london'), c('price', 'house', 'market', 'china', 'mortgage'), c('economic', 'growth', 'rate', 'rise', 'figure'), c('club', 'unit', 'glazer', 'invest', 'argentina'), c('economic', 'countries', 'govern', 'world', 'people'), c('profit', 'sale', 'share', 'market', 'companies'), c('companies', 'drug', 'call', 'firm', 'customer'))
+ngd_auto_added <- numeric(12)
+index <- 1
+for (topics in topics_automatic_manually_added) {
+  ngd_auto_added[index] <- compute_NGD_for_combinations(topics)
+  index <- index+1
+}
+ngd_auto_added
