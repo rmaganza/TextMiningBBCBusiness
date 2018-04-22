@@ -44,6 +44,7 @@ docs_raw <- docs
 # Tolgo prima di tutto i trattini alti che, altrimenti, togliendoli con il comando predefinito, attaccherebbero le parole
 docs %<>% tm_map(toSpace, '-') %>%
          tm_map(removePunctuation) %>%
+         tm_map(content_transformer(tolower)) %>%
          tm_map(removeNumbers) %>%
          tm_map(removeWords, c(stopwords("SMART"), 'year', 'hour', 'month'))
 
@@ -63,18 +64,6 @@ docs <- Corpus(VectorSource(docs))
 # runnare ogni volta che si riesegue il destemming per qualsiasi motivo e PUSHARE il file docs aggiornato !!!
 # save(docs, file=paste0(here(),'/rdata_files/docs.RData'))
 #############################
-
-
-
-
-#Creo la Document-Term matrix attuo una prima valutazione delle frequenze di appirizione delle parole:
-# writeLines(as.character(docs[[40]]))
-dtm <- DocumentTermMatrix(docs)
-inspect(dtm)
-freq <- colSums(as.matrix(dtm))
-ord <- order(freq, decreasing=T)
-freq[head(ord)]
-freq[tail(ord)]
 
 
 # Creo una nuova dtm dove faccio una selezione della frequenza e delle lunghezza dei termini che vi entrano:
@@ -110,59 +99,6 @@ builtins <- import_builtins()
 py$tuple_dict <- builtins$dict(builtins$zip(names_freq, freq_idf))
 py$mask <- np$array(PIL$Image$open(maskpath))
 source_python(paste0(here(), '/python/wordcloud_generator.py'))
-####################################################
-
-#QUESTA PARTE E' EVITABILE, LA TENGO SOLO PER APPREZZARE GLI SFORZI CHO HO FATTO
-##########################################################
-#Procedo ora con la clusterizzazione dei testi attravero il metodo delle k-means:
- # Preliminarmente individuo quel k che minimizza la DEVin media o quello che massimizza la silhouette:
-#DEVin
-dev_in=c()
-for (k in 1:15){
-  km = kmeans(as.matrix(dtmr), k)
-  dev_in[k]=km$tot.withinss
-}
-
-plot(1:15, dev_in, type='b')
-
-#Sil
-d <- dist(as.matrix(dtmr))
-head(d)
-v_sil=c()
-for (i in 2:13){
-  km = kmeans(as.matrix(dtmr), i)
-  sil =silhouette(km$cluster, d)
-  s.sil <- summary(sil)
-  v_sil[i-1]=s.sil$avg.width
-}
-
-plot(1:12, v_sil, type='b')
-#Scelgo k=7 poich? ? il migior trade-off tra una DEVin bassa ed un'alta silhouette media!
-km = kmeans(dtmr, 7)
-dtmr$clustering = km$cluster
-
-#faccio le wordscluods dei 7 gruppi
-
-freq1=colSums(gr1)
-wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq2=colSums(gr2)
-wordcloud(names(freq2),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq3=colSums(gr3)
-wordcloud(names(freq3),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq4=colSums(gr4)
-wordcloud(names(freq4),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq5=colSums(gr5)
-wordcloud(names(freq5),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq6=colSums(gr6)
-wordcloud(names(freq6),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
-
-freq7=colSums(gr7)
-wordcloud(names(freq1),freqr,min.freq=30,colors=brewer.pal(6,"Dark2"))
 
 ###########################
 #calcoliamo la distanza 'coseno' e applichiamo l'algoritmo dei k-medoidi con k in base alla silhouette media
