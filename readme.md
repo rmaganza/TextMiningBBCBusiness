@@ -29,6 +29,7 @@ and of the following Python packages:
 - wordcloud
 - Pillow
 - numpy
+- watson_developer_cloud
 
 You may need to install them if you don't have them already. Unfortunately, the R language does not come with a reliable dependency manager.
 
