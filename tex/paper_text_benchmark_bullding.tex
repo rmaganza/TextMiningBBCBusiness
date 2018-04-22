@@ -45,8 +45,8 @@ Nel paper viene condotta un'analisi su un corpus di 510 articoli di business in 
 \end{abstract}
 
 \section{Introduzione}
-L'estrazione di parole chiave da un testo è un'abilita innata per gli umani, che sono in grado di distinguere con molta chiarezza ciò che è importante da ciò che può passare in secondo piano. \newline
-In tempi moderni la quantità di dati disponibili sotto forma di documenti non strutturati è aumentata esponenzialmente, e con essa la difficoltà nel conservare questi testi ed indicizzarli. Se precedentemente categorizzare ogni documento manualmente in fase di caricamento in un qualche tipo di database poteva essere una possibilità, oggigiorno ciò sembra alquanto proibitivo. \newline
+L'estrazione di parole chiave da un testo è un'abilit\`a innata per gli umani, che sono in grado di distinguere con molta chiarezza ciò che è importante da ciò che può passare in secondo piano. \newline
+In tempi moderni la quantità di dati disponibili sotto forma di documenti non strutturati è aumentata esponenzialmente, e con essa la difficoltà nel conservare questi testi ed indicizzarli. Se precedentemente categorizzare ogni documento manualmente in fase di caricamento, in un qualche tipo di database, poteva essere una possibilità, oggigiorno ciò sembra alquanto proibitivo. \newline
 Il  cosiddetto \textit{topic modeling} è un concetto alquanto recente, essendosi sviluppato a partire dal 1999 all'interno della ricerca sull'\textit{information retrieval}. \cite{1999}
 Esso mira ad estrarre automaticamente delle \textit{keywords} da un elenco di documenti e ad associare ognuna di queste \textit{keywords} a uno o più macroargomenti. \newline
 A partire dal modello \textit{Latent Semantinc Indexing}, ne sono state proposte alcune estensioni, quali il \textit{Probabilistic Latent Semantic Analysis} e il \textit{Latent Dirichlet Allocation}, che risulta ad oggi il modello probabilmente più usato nell'ambito. Recentemente sono state proposte anche alcune generalizzazioni del modello LDA quali la \textit{Pachinko Allocation}, che consente di modellizzare anche la correlazione fra i vari \textit{topics}, ma ai fini di questo lavoro ciò è stato reputato non essenziale, ed è stato considerato il modello LDA.  \cite{survey} \newline
@@ -60,8 +60,8 @@ Verrà inoltre menzionato un metodo appartenente allo stato dell'arte nell'ambit
 \section{Materiali e metodi}
 
 \subsection{Materiali}
-I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli della BBC degli anni 2004-2005.\cite{Greene2005} Gli articoli erano provvisti di label che identificavano 5 aree: \textit{business}, \textit{entertainment}, \textit{politics}, \textit{sports} e \textit{tech} e l'obiettivo dell'analisi originale era di suddividere efficacemente ed in maniera automatica i documenti fra questi macroargomenti.\cite{GreeneOriginal} I documenti considerati corrispondono a quelli che in questo dataset possedevano la label \textit{business}. \newline
-È da evidenziare immediatamente come il clustering su questi testi abbia presentato non pochi problemi: infatti, essendo tutti appartenenti alla stessa area semantica, presentavano differenze fini l'uno con l'altro e molti criteri che potevano essere discriminanti nel dataset completo originale qui non sono stati applicabili.
+I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli della BBC degli anni 2004-2005.\cite{Greene2005} Gli articoli erano provvisti di labels che identificavano 5 aree: \textit{business}, \textit{entertainment}, \textit{politics}, \textit{sports} e \textit{tech} e l'obiettivo dell'analisi originale era di suddividere efficacemente ed in maniera automatica i documenti fra questi macroargomenti.\cite{GreeneOriginal} I documenti considerati corrispondono a quelli che in questo dataset possedevano la label \textit{business}. \newline
+È da evidenziare immediatamente come il clustering su questi testi abbia presentato non pochi problemi: infatti, essendo tutti appartenenti alla stessa area semantica, presentavano differenze fini l'uno con l'altro e molti criteri, che potevano essere discriminanti nel dataset completo originale, qui non sono stati applicabili.
 
 \subsection{Metodi} 
 
@@ -97,7 +97,7 @@ I 510 documenti oggetto di analisi provengono da una collezione di 2225 articoli
 
 \subsubsection{Pre-Processing}
 Il corpus di articoli è stato preliminarmente trattato eliminando punteggiatura, simboli particolari e parole poco esplicative allo scopo dell'analisi. \newline 
-Sono state rimosse le stopwords, utilizzando un dizionario sufficientemente ampio creato per il sistema \textit{SMART}\footnote{\textit{System for the Mechanical Analysis and Retrieval of Text}}, ed è stato attuato lo stemming, rimuovendo le desinenze da tutte le parole e riconducendole a una radice comune. Questa procedura in particolare è dovuta essere affinata manualmente, poiché il sistema di riconoscimento utilizzato non è riuscito ad effettuare lo stemming di tutte le parole ed inoltre presentava, come logico, molti problemi nel riconoscere i nomi di aziende e compagnie, che nei testi in esame erano ovviamente molto presenti. \newline
+Sono state rimosse le stopwords, utilizzando un dizionario sufficientemente ampio creato per il sistema \textit{SMART}\footnote{\textit{System for the Mechanical Analysis and Retrieval of Text}}, ed è stato attuato lo stemming, rimuovendo le desinenze da tutte le parole e riconducendole a una radice comune. Questa procedura in particolare è stata affinata manualmente, poiché il sistema di riconoscimento utilizzato non è riuscito ad effettuare lo stemming di tutte le parole ed inoltre presentava, come logico, molti problemi nel riconoscere i nomi di aziende e compagnie, che nei testi in esame erano ovviamente molto presenti. \newline
 Successivamente, dato che molte parole senza suffisso sono risultate di difficile comprensione, è stato applicato un destemming che ha riportato le parole ad una forma originale condivisa attraverso un criterio euristico che ha completato le parole troncate con i suffissi più frequenti nel corpus originale. \newline
 Si è proceduto quindi con la costruzione della Document-Term matrix imputando le frequenze attraverso il metodo \textit{tf-idf:}\[ w_{ij}=\frac{f_{ij}}{max\{{f_{1j,},f_{2j},...,f_{|V|j}}\}} \log{\frac{N}{df_{i}}}\]
 dove $V$ rappresenta il vocabolario del corpus, $f_{ij}$ è la frequenza assoluta del termine $i$ nel documento $j$, $N$ è il numero totale di documenti e $df_{i}$ il numero di documenti in cui appare il termine $i$.
@@ -111,9 +111,9 @@ dove $\mathbf{X}$ e $\mathbf{Y}$ sono, in questo caso, due righe della DTM. \foo
 Successivamente è stato applicato l'algoritmo dei k-medoidi per $k \in \{2, \dots, 15\}$ dando in input la matrice di distanze ottenuta al passo precedente. L'algoritmo sceglie inizialmente $k$ data points casualmente come medoidi e associa ogni altro punto al medoide più vicino ad esso.
 Definendo una opportuna funzione di costo $C$ si calcola per ogni oggetto non medoide $O$ il costo $C(medoid, O)$ di scambio fra il medoide e l'oggetto.  Se $C<0$, si scambia il medoide con l'oggetto $O$, iterando fino a convergenza.
 \newline
-È stato scelto $k=12$ poiché tale valore minimizzava la silhouette media del clustering.
+È stato scelto $k=12$ poiché tale valore massimizzava la silhouette media del clustering.
 \newline
-Per la definizione del benchmark sono state selezionate, per ognuno dei 12 gruppi così ottenuti, le 5 parole che per la logica degli autori sono risultate essere le maggiormente identificative.
+Per la definizione del benchmark sono state selezionate, per ognuno dei 12 gruppi così ottenuti, le 5 parole che per la logica degli autori sono risultate essere maggiormente identificative.
 
 
 Sono stati quindi estratti i topic utilizzando il modello \textit{Latent Dirichlet Allocation} (LDA), che utilizza una logica di inferenza bayesiana \cite{survey} e le cui specifiche vanno oltre lo scopo di questo articolo, richiedendo di ottenere 12 topic in output per poter avere risultati confrontabili.
@@ -125,7 +125,8 @@ I topics ottenuti dai due metodi sono riportati nella sezione successiva.
 
 
 E' stata poi utilizzata la Normalised Google Distance (NGD) \cite{NGD} \[NGD(x,y)=\frac{max\{\log f(x),\log f(y)\}-\log f(x,y)}{\log N-min\{\log f(x),\log f(y)\}} \]
-dove $f(x)$ e $f(y)$ sono, rispettivamente, il numero di risultati ottenuti ricercando su Google le parole $x$ e $y$ singolarmente, $f(x,y)$ è il numero di risultati ottenuto da una query combinata delle due parole, e $N$ è il numero totale di pagine indicizzate da Google nella lingua in esame \footnote{Poiché questo numero non è né noto né conoscibile, esso è stato stimato con il numero di risultati ottenuti ricercando la parola ``the". Questo porterà ad avere dei risultati in cui la NGD è decisamente sovrastimata, ma ciò non sarà un problema mantenendo $N$ costante per tutti i confronti.}, come indice di dissimilarità semantica, ed è stata calcolata per tutte le possibili combinazioni di coppie di parole per ogni gruppo considerando, come indice di sintesi, la media campionaria di ciascun gruppo, sia per i risultati manuali che per quelli automatici.
+dove $f(x)$ e $f(y)$ sono, rispettivamente, il numero di risultati ottenuti ricercando su Google le parole $x$ e $y$ singolarmente, $f(x,y)$ è il numero di risultati ottenuto da una query combinata delle due parole, e $N$ è il numero totale di pagine indicizzate da Google nella lingua in esame \footnote{Poiché questo numero non è né noto né conoscibile, esso è stato stimato con il numero di risultati ottenuti ricercando la parola ``the". Questo porterà ad avere dei risultati in cui la NGD è decisamente sovrastimata, ma ciò non sarà un problema mantenendo $N$ costante per tutti i confronti.}.
+Essa \`e stata utilizzata come indice di dissimilarità semantica, ed è stata calcolata per tutte le possibili combinazioni di coppie di parole per ogni gruppo.  Ciascun gruppo, inerente sia i risultati manuali che quelli automatici, \`e stato sintetizzato attraverso la media campionaria.
 
 In conclusione, è stata effettuata una analisi di un documento casuale nel corpus con il framework NLU di IBM Watson, per mostrarne le potenzialità.
 \section{Risultati}
@@ -239,7 +240,7 @@ Passando al topic modeling effettuato con il modello LDA, la lista delle keyword
 \end{table}
 I topics estratti dal modello LDA in alcuni casi risultano sovrapponibili a quelli estratti manualmente o comunque chiari, mentre in altri sono un po' più fumosi. Per quanto riguarda la coerenza semantica, i 12 topics estratti manualmente presentano una NGD media di 0.7 mentre quelli automatici di 0.64. 
 \newline
-Il modello automatico fornisce una coerenza semantica addirittura maggiore del modello manuale, mostrandoti però meno capace ad individuare topics sempre ben definiti. Ciò porti a chiedersi se la NGD catturi tutta l'informazione possibile circa la coerenza semantica di due parole. Si rimandano le discussioni sulla metrica utilizzata all'ultimo paragrafo.
+Il modello automatico fornisce una coerenza semantica addirittura maggiore del modello manuale, mostrandosi però meno capace ad individuare topics sempre ben definiti. Ciò porta a chiedersi se la NGD catturi tutta l'informazione possibile circa la coerenza semantica di due parole. Si rimandano le discussioni sulla metrica utilizzata all'ultimo paragrafo.
 \newline
 Per ultimo, è stato utilizzato IBM Watson sul primo testo del corpus:
 {\footnotesize \blockquote{Ad sales boost Time Warner profit
@@ -256,9 +257,9 @@ Per ultimo, è stato utilizzato IBM Watson sul primo testo del corpus:
 }}
 Watson ha identificato come \textit{keywords}: \textit{Time Warner}, \textit{Time Warner profit}, \textit{higher advert sales}, \textit{AOL Eruope}, fra le altre, riuscendo inoltre a riconoscere le compagnie in esame e le persone citate accompagnando il riconoscimento con un link alle informazioni di ciascuna.
 \section{Discussioni}
-Il riconoscimento automatico dei topics si è mostrato valido: per quanto ancora non riesca a sintetizzare in maniera ``umana", la metrica utilizzata lo pone a un livello superiore alla sintesi manuale. Sarebbe interessante sviluppare il lavoro, utilizzando metodi di topic extraction automatica più sofisticati o con un altro approccio, magari numerico come la \textit{Non-negative Matrix Factorization }(NMF), da un lato, e metodi di clustering più adeguati, dall'altro, per la parte di riconoscimento manuale.
+Il riconoscimento automatico dei topics si è mostrato valido: per quanto ancora non riesca a sintetizzare in maniera ``umana", la metrica utilizzata lo pone a un livello superiore alla sintesi manuale. Sarebbe interessante, da un lato, sviluppare il lavoro utilizzando metodi di topic extraction automatica più sofisticati, o con un approccio di tipo numerico come la \textit{Non-negative Matrix Factorization }(NMF); dall'altro, per la parte di riconoscimento manuale, sarebbero interessanti metodi di clustering più adeguati .
 \newline
-Sarebbe inoltre necessario sviluppare una metrica di coerenza semantica migliore, in quanto l'utilizzo della Normalized Google Distance desta non pochi dubbi. Per farlo, servirebbe però un corpus di riferimento strutturato e molto ampio, e non è stato possibile reperirlo in tempo.
+Sarebbe inoltre necessario sviluppare una metrica di coerenza semantica migliore, in quanto l'utilizzo della Normalized Google Distance desta non pochi dubbi. Per farlo, servirebbe però un corpus di riferimento strutturato e molto ampio, ma non è stato possibile reperirlo.
 
 
 Ci si chiede, inoltre, quale possa essere l'obiettivo ultimo della sommarizzazione di un documento: se essa debba essere \textit{umanamente} comprensibile o se, come probabile, tale categorizzazione debba essere riconosciuta solamente da \textit{macchine}, per esempio per la ricerca di documenti in banche dati testuali. A quel punto probabilmente non sarà nemmeno più necessario che esse mantengano una certa coerenza semantica, rendendo necessario lo sviluppo di un nuovo metodo di valutazione.
